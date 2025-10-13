@@ -29,6 +29,12 @@ Un sistema avanzado de optimización de rutinas de ejercicio utilizando **Progra
 ### Instalación de Dependencias
 
 ```bash
+python3 -m venv venv
+
+source venv/bin/activate
+```
+
+```bash
 pip3 install -r requirements.txt
 ```
 
