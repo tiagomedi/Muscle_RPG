@@ -59,7 +59,7 @@ REPS_BY_LEVEL = {
     4: 12,  # profesional
 }
 
-
+# Aqui estan los niveles de estamina por niveles de usuario -> CAMBIAR \ CORREGIR
 def default_level_stamina_limit(level: int) -> int:
     """Devuelve el límite de estamina por músculo para un nivel dado (unidad arbitraria semanal)."""
     mapping = {0: 80, 1: 110, 2: 140, 3: 180, 4: 220}
