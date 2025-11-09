@@ -1,0 +1,115 @@
+"""Página de seguimiento diario."""
+import streamlit as st
+from datetime import datetime, timedelta
+from src.database.db_manager import DatabaseManager
+from src.utils.session import check_login_state
+
+def get_current_day_exercises():
+    """Obtiene los ejercicios del día actual desde la rutina guardada."""
+    # TODO: Implementar obtención de ejercicios del día actual
+    # Por ahora retornamos datos de ejemplo
+    return [
+        {"name": "Press de Banca", "sets": 3, "reps": 12},
+        {"name": "Dominadas", "sets": 4, "reps": 8},
+        {"name": "Press Militar", "sets": 3, "reps": 12}
+    ]
+
+def show_tracking_page():
+    """Muestra la página de seguimiento diario."""
+    st.title("Seguimiento Diario")
+    
+    # Verificar inicio de sesión
+    username = check_login_state()
+    
+    db = DatabaseManager()
+    
+    # Selector de día
+    today = datetime.now()
+    days_ago = st.slider("Seleccionar día", 0, 6, 0,
+                        help="0 = Hoy, 1 = Ayer, etc.")
+    selected_date = today - timedelta(days=days_ago)
+    st.write(f"Fecha seleccionada: {selected_date.strftime('%d/%m/%Y')}")
+    
+    # Obtener ejercicios del día
+    exercises = get_current_day_exercises()
+    
+    # Formulario de seguimiento
+    with st.form(f"tracking_form_{days_ago}"):
+        st.subheader("Registro de entrenamiento")
+        
+        # Duración total
+        duration = st.slider("Duración total del entrenamiento (minutos)",
+                           30, 180, 120, step=5)
+        
+        # Estado general
+        energy = st.select_slider("Nivel de energía",
+                                options=["Muy bajo", "Bajo", "Normal", "Alto", "Muy alto"],
+                                value="Normal")
+        
+        # Seguimiento por ejercicio
+        st.subheader("Ejercicios completados")
+        exercise_tracking = {}
+        
+        for ex in exercises:
+            st.write(f"### {ex['name']}")
+            cols = st.columns([1, 1, 1])
+            
+            with cols[0]:
+                completed_sets = st.number_input(
+                    f"Sets completados (de {ex['sets']})",
+                    0, ex['sets'], ex['sets']
+                )
+            
+            with cols[1]:
+                avg_reps = st.number_input(
+                    f"Reps promedio (objetivo: {ex['reps']})",
+                    0, ex['reps'] * 2, ex['reps']
+                )
+            
+            with cols[2]:
+                difficulty = st.select_slider(
+                    "Dificultad percibida",
+                    options=["Muy fácil", "Fácil", "Moderado", "Difícil", "Muy difícil"],
+                    value="Moderado",
+                    key=f"diff_{ex['name']}"
+                )
+            
+            exercise_tracking[ex['name']] = {
+                'sets_completed': completed_sets,
+                'avg_reps': avg_reps,
+                'difficulty': difficulty,
+                'target_sets': ex['sets'],
+                'target_reps': ex['reps']
+            }
+        
+        # Notas adicionales
+        notes = st.text_area("Notas adicionales (opcional)",
+                           placeholder="Escribe aquí cualquier observación...")
+        
+        submitted = st.form_submit_button("Guardar seguimiento")
+        
+        if submitted:
+            tracking_data = {
+                'duration': duration,
+                'energy_level': energy,
+                'exercises': exercise_tracking,
+                'notes': notes,
+            }
+            
+            if db.save_tracking(username, days_ago, tracking_data):
+                st.success("Seguimiento guardado exitosamente")
+                
+                # Mostrar resumen
+                st.subheader("Resumen del entrenamiento")
+                completion_rate = sum(ex['sets_completed'] for ex in exercise_tracking.values()) / \
+                                sum(ex['target_sets'] for ex in exercise_tracking.values()) * 100
+                
+                st.write(f"Completaste el {completion_rate:.1f}% de los sets programados")
+                st.write(f"Duración total: {duration} minutos")
+                st.write(f"Nivel de energía: {energy}")
+                
+                if notes:
+                    st.write("Notas:", notes)
+
+if __name__ == "__main__":
+    show_tracking_page()
