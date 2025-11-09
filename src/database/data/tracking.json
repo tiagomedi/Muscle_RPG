@@ -1,0 +1,151 @@
+{
+  "hola": {
+    "5": {
+      "date": "2025-11-09T20:35:47.731788",
+      "duration": 120,
+      "energy_level": "Normal",
+      "exercises": {
+        "Press de Banca": {
+          "sets_completed": 3,
+          "avg_reps": 12,
+          "difficulty": "Moderado",
+          "target_sets": 3,
+          "target_reps": 12
+        },
+        "Dominadas": {
+          "sets_completed": 4,
+          "avg_reps": 8,
+          "difficulty": "Moderado",
+          "target_sets": 4,
+          "target_reps": 8
+        },
+        "Press Militar": {
+          "sets_completed": 3,
+          "avg_reps": 12,
+          "difficulty": "Moderado",
+          "target_sets": 3,
+          "target_reps": 12
+        }
+      },
+      "notes": ""
+    },
+    "0": {
+      "date": "2025-11-09T20:36:59.499066",
+      "duration": 120,
+      "energy_level": "Normal",
+      "exercises": {
+        "Press de Banca": {
+          "sets_completed": 3,
+          "avg_reps": 12,
+          "difficulty": "Moderado",
+          "target_sets": 3,
+          "target_reps": 12
+        },
+        "Dominadas": {
+          "sets_completed": 4,
+          "avg_reps": 8,
+          "difficulty": "Moderado",
+          "target_sets": 4,
+          "target_reps": 8
+        },
+        "Press Militar": {
+          "sets_completed": 3,
+          "avg_reps": 12,
+          "difficulty": "Moderado",
+          "target_sets": 3,
+          "target_reps": 12
+        }
+      },
+      "notes": ""
+    },
+    "1": {
+      "date": "2025-11-09T20:40:37.991207",
+      "duration": 120,
+      "energy_level": "Normal",
+      "exercises": {
+        "Press de Banca": {
+          "sets_completed": 3,
+          "avg_reps": 12,
+          "difficulty": "Moderado",
+          "target_sets": 3,
+          "target_reps": 12
+        },
+        "Dominadas": {
+          "sets_completed": 4,
+          "avg_reps": 8,
+          "difficulty": "Moderado",
+          "target_sets": 4,
+          "target_reps": 8
+        },
+        "Press Militar": {
+          "sets_completed": 3,
+          "avg_reps": 12,
+          "difficulty": "Moderado",
+          "target_sets": 3,
+          "target_reps": 12
+        }
+      },
+      "notes": "redi"
+    },
+    "2": {
+      "date": "2025-11-09T20:40:46.157821",
+      "duration": 120,
+      "energy_level": "Normal",
+      "exercises": {
+        "Press de Banca": {
+          "sets_completed": 3,
+          "avg_reps": 12,
+          "difficulty": "Moderado",
+          "target_sets": 3,
+          "target_reps": 12
+        },
+        "Dominadas": {
+          "sets_completed": 4,
+          "avg_reps": 8,
+          "difficulty": "Moderado",
+          "target_sets": 4,
+          "target_reps": 8
+        },
+        "Press Militar": {
+          "sets_completed": 3,
+          "avg_reps": 12,
+          "difficulty": "Moderado",
+          "target_sets": 3,
+          "target_reps": 12
+        }
+      },
+      "notes": "fsdfds"
+    }
+  },
+  "giadach": {
+    "1": {
+      "date": "2025-11-09T20:42:44.548112",
+      "duration": 110,
+      "energy_level": "Muy alto",
+      "exercises": {
+        "Press de Banca": {
+          "sets_completed": 3,
+          "avg_reps": 12,
+          "difficulty": "Dif\u00edcil",
+          "target_sets": 3,
+          "target_reps": 12
+        },
+        "Dominadas": {
+          "sets_completed": 4,
+          "avg_reps": 8,
+          "difficulty": "F\u00e1cil",
+          "target_sets": 4,
+          "target_reps": 8
+        },
+        "Press Militar": {
+          "sets_completed": 3,
+          "avg_reps": 12,
+          "difficulty": "Moderado",
+          "target_sets": 3,
+          "target_reps": 12
+        }
+      },
+      "notes": "mongo"
+    }
+  }
+}
