@@ -155,7 +155,6 @@ if st.session_state.get('show_level_quiz', False):
         weekly_sets = st.selectbox("Promedio de sets semanales por músculo principal", ["<6", "6-10", "11-15", ">15"], index=1)
         periodization = st.radio("¿Sueles planificar periodización (mesociclos/meses)?", ["Sí", "No"], index=1)
         recent_progress = st.radio("En los últimos 3 meses, tu fuerza/volumen ha:", ["Mejorado", "Igual", "Empeorado"], index=0)
-        injuries = st.radio("Tienes lesiones que limiten ejercicios compuestos?", ["No", "Sí"], index=0)
         quarter_updates = st.radio("¿Sueles actualizar tus rutinas cada ~3 meses (ciclo trimestral)?", ["Sí", "No"], index=0)
         can_two_hours = st.radio("¿Te sientes cómodo completando sesiones intensas de ~2 horas?", ["Sí", "No"], index=0)
         submitted = st.form_submit_button("Calcular nivel recomendado")
@@ -177,7 +176,6 @@ if st.session_state.get('show_level_quiz', False):
             'weekly_sets': weekly_sets,
             'periodization': periodization,
             'recent_progress': recent_progress,
-            'injuries': injuries,
             'quarter_updates': quarter_updates,
             'can_two_hours': can_two_hours,
         }
@@ -238,13 +236,12 @@ if st.session_state.get('show_level_quiz', False):
             sets_score = 3
         period_score = 1 if periodization == "Sí" else 0
         progress_score = 1 if recent_progress == "Mejorado" else 0
-        injury_penalty = -2 if injuries == "Sí" else 0
         env_score = 1 if environment == 'Gimnasio' else 0
         quarter_score = 1 if quarter_updates == "Sí" else 0
 
-        total = (years_score + sess_score + comp_score + twoh_score + stamina_score + pullups_score + bench_score + sets_score + period_score + progress_score + env_score + quarter_score + injury_penalty)
-        # máximo teorico aproximado = 24
-        max_possible = 24
+        total = (years_score + sess_score + comp_score + twoh_score + stamina_score + pullups_score + bench_score + sets_score + period_score + progress_score + env_score + quarter_score)
+        # máximo teorico aproximado = 23
+        max_possible = 23
         normalized = max(0, min(total, max_possible))
         recommended = int(round((normalized / max_possible) * 4))
         recommended = max(0, min(4, recommended))
@@ -263,7 +260,6 @@ if st.session_state.get('show_level_quiz', False):
                 'weekly_sets_score': sets_score,
                 'periodization': period_score,
                 'recent_progress': progress_score,
-                'injury_penalty': injury_penalty,
                 'environment_score': env_score,
                 'quarter_update_score': quarter_score,
                 'total_raw': total,
