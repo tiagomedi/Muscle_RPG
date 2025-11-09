@@ -136,34 +136,63 @@ else:
 
 # Mostrar cuestionario para estimar nivel si el usuario lo solicitó
 if st.session_state.get('show_level_quiz', False):
-    st.markdown("### Cuestionario técnico para estimar tu nivel")
+    st.markdown("### Cuestionario técnico y de perfil para estimar tu nivel")
     with st.form("level_quiz"):
+        # Perfil general (constantes y variables)
+        age = st.number_input("Edad (años)", min_value=13, max_value=100, value=25, step=1)
+        gender = st.selectbox("Género (opcional)", ["No declarar", "Femenino", "Masculino", "Otro"], index=0)
+        height_cm = st.number_input("Estatura (cm)", min_value=100, max_value=230, value=175, step=1)
+        weight_kg = st.number_input("Peso actual (kg)", min_value=30.0, max_value=300.0, value=75.0, step=0.5)
+        environment = st.selectbox("Entorno de entrenamiento", ["Gimnasio", "En casa", "Híbrido"], index=2)
+        # Variables de entrenamiento
         years = st.number_input("¿Cuánto tiempo llevas entrenando consistentemente? (años)", min_value=0.0, max_value=50.0, value=1.0, step=0.5)
         sessions = st.selectbox("Sesiones por semana (promedio)", [1, 2, 3, 4, 5, 6, 7], index=3)
         compounds = st.radio("¿Realizas habitualmente ejercicios compuestos (sentadillas, peso muerto, press banca)?", ["Sí", "No"], index=0)
-        # Preguntas técnicas
+        stamina_self = st.selectbox("Capacidad de recuperación / 'stamina' (auto-evaluación)", ["Baja", "Media", "Alta"], index=1)
+        # Preguntas técnicas (hipertrofia)
         pullups = st.selectbox("Máximo número de dominadas (pull-ups) que puedes hacer seguidas", [0, 1, 3, 5, 10], index=2)
         bench_ratio = st.selectbox("Tu 1RM en press banca en relación a tu peso corporal (aprox)", ["<0.5x", "0.5-0.75x", "0.75-1.0x", ">=1.0x"], index=1)
         weekly_sets = st.selectbox("Promedio de sets semanales por músculo principal", ["<6", "6-10", "11-15", ">15"], index=1)
         periodization = st.radio("¿Sueles planificar periodización (mesociclos/meses)?", ["Sí", "No"], index=1)
         recent_progress = st.radio("En los últimos 3 meses, tu fuerza/volumen ha:", ["Mejorado", "Igual", "Empeorado"], index=0)
         injuries = st.radio("Tienes lesiones que limiten ejercicios compuestos?", ["No", "Sí"], index=0)
+        quarter_updates = st.radio("¿Sueles actualizar tus rutinas cada ~3 meses (ciclo trimestral)?", ["Sí", "No"], index=0)
         can_two_hours = st.radio("¿Te sientes cómodo completando sesiones intensas de ~2 horas?", ["Sí", "No"], index=0)
         submitted = st.form_submit_button("Calcular nivel recomendado")
 
     if submitted:
-        # Scoring heurístico ampliado (max total = 20)
-        # años (0..4)
+        # Construir perfil y guardarlo
+        user_profile = {
+            'age': age,
+            'gender': gender,
+            'height_cm': height_cm,
+            'weight_kg': weight_kg,
+            'environment': environment,
+            'years': years,
+            'sessions_per_week': sessions,
+            'uses_compounds': compounds,
+            'stamina_self': stamina_self,
+            'pullups': pullups,
+            'bench_ratio': bench_ratio,
+            'weekly_sets': weekly_sets,
+            'periodization': periodization,
+            'recent_progress': recent_progress,
+            'injuries': injuries,
+            'quarter_updates': quarter_updates,
+            'can_two_hours': can_two_hours,
+        }
+        st.session_state['user_profile'] = user_profile
+
+        # Scoring heurístico ampliado (max total aproximado = 24)
+        # años (0..3) -> penalizar edad avanzada para recuperación
         if years < 0.5:
             years_score = 0
         elif years < 1.5:
             years_score = 1
         elif years < 3:
             years_score = 2
-        elif years < 6:
-            years_score = 3
         else:
-            years_score = 4
+            years_score = 3
         # sesiones (0..4)
         if sessions <= 2:
             sess_score = 0
@@ -177,63 +206,69 @@ if st.session_state.get('show_level_quiz', False):
             sess_score = 4
         comp_score = 1 if compounds == "Sí" else 0
         twoh_score = 1 if can_two_hours == "Sí" else 0
-        # dominadas (0..4)
+        # stamina self (penaliza o beneficia) ( -1,0,1 )
+        stamina_map = {'Baja': -1, 'Media': 0, 'Alta': 1}
+        stamina_score = stamina_map.get(stamina_self, 0)
+        # dominadas (0..3)
         if pullups == 0:
             pullups_score = 0
         elif pullups == 1:
             pullups_score = 1
         elif pullups == 3:
             pullups_score = 2
-        elif pullups == 5:
-            pullups_score = 3
         else:
-            pullups_score = 4
-        # bench ratio (0..4)
+            pullups_score = 3
+        # bench ratio (0..3)
         if bench_ratio == "<0.5x":
             bench_score = 0
         elif bench_ratio == "0.5-0.75x":
             bench_score = 1
         elif bench_ratio == "0.75-1.0x":
-            bench_score = 3
+            bench_score = 2
         else:
-            bench_score = 4
-        # weekly sets (0..4)
+            bench_score = 3
+        # weekly sets (0..3)
         if weekly_sets == "<6":
             sets_score = 0
         elif weekly_sets == "6-10":
             sets_score = 1
         elif weekly_sets == "11-15":
-            sets_score = 3
+            sets_score = 2
         else:
-            sets_score = 4
+            sets_score = 3
         period_score = 1 if periodization == "Sí" else 0
         progress_score = 1 if recent_progress == "Mejorado" else 0
-        injury_penalty = -1 if injuries == "Sí" else 0
+        injury_penalty = -2 if injuries == "Sí" else 0
+        env_score = 1 if environment == 'Gimnasio' else 0
+        quarter_score = 1 if quarter_updates == "Sí" else 0
 
-        total = (years_score + sess_score + comp_score + twoh_score + pullups_score + bench_score + sets_score + period_score + progress_score + injury_penalty)
-        # máximo teorico (sin penalización) = 20
-        max_possible = 20
+        total = (years_score + sess_score + comp_score + twoh_score + stamina_score + pullups_score + bench_score + sets_score + period_score + progress_score + env_score + quarter_score + injury_penalty)
+        # máximo teorico aproximado = 24
+        max_possible = 24
         normalized = max(0, min(total, max_possible))
         recommended = int(round((normalized / max_possible) * 4))
         recommended = max(0, min(4, recommended))
         st.session_state['recommended_level'] = recommended
         label = {0: 'Principiante', 1: 'Básico', 2: 'Intermedio', 3: 'Avanzado', 4: 'Profesional'}[recommended]
         st.success(f"Nivel recomendado: {recommended} ({label})")
-        with st.expander("Ver desglose de puntuación"):
-            st.write({
+        with st.expander("Ver desglose de puntuación y perfil registrado"):
+            st.write({'user_profile': user_profile, 'scores': {
                 'years_score': years_score,
                 'sessions_score': sess_score,
                 'compounds': comp_score,
                 'two_hour_tolerance': twoh_score,
+                'stamina_score': stamina_score,
                 'pullups_score': pullups_score,
                 'bench_score': bench_score,
                 'weekly_sets_score': sets_score,
                 'periodization': period_score,
                 'recent_progress': progress_score,
                 'injury_penalty': injury_penalty,
+                'environment_score': env_score,
+                'quarter_update_score': quarter_score,
                 'total_raw': total,
                 'recommended_level': recommended,
-            })
+            }})
         if st.button("Aplicar nivel recomendado"):
             st.session_state['user_level_slider'] = recommended
             st.session_state['show_level_quiz'] = False
