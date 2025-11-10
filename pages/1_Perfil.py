@@ -24,6 +24,30 @@ def show_profile_page():
     init_session_state()
     db = DatabaseManager()
     
+    # Cargar perfil existente si existe
+    user_profile = db.get_profile(username)
+    if user_profile and not st.session_state.get('show_level_quiz', False):
+        st.session_state['user_profile'] = user_profile
+        
+        # Mostrar datos actuales del perfil
+        with st.expander("👤 Tu perfil actual", expanded=True):
+            col1, col2 = st.columns(2)
+            with col1:
+                st.write("**Datos básicos:**")
+                st.write(f"- Edad: {user_profile['age']} años")
+                st.write(f"- Género: {user_profile['gender']}")
+                st.write(f"- Estatura: {user_profile['height_cm']} cm")
+                st.write(f"- Peso: {user_profile['weight_kg']} kg")
+            with col2:
+                st.write("**Datos de entrenamiento:**")
+                st.write(f"- Experiencia: {user_profile['years']} años")
+                st.write(f"- Sesiones/semana: {user_profile['sessions_per_week']}")
+                st.write(f"- Entorno: {user_profile['environment']}")
+            
+            if st.button("🔄 Actualizar mi perfil"):
+                st.session_state['show_level_quiz'] = True
+                st.rerun()
+    
     # Descripción del proyecto
     with st.expander("Acerca del proyecto", expanded=False):
         st.markdown(
@@ -68,19 +92,51 @@ def show_profile_page():
     # Formulario de perfil/nivel
     if st.session_state.get('show_level_quiz', False):
         st.markdown("### Perfil de entrenamiento")
+        existing_profile = st.session_state.get('user_profile', {})
         with st.form("level_quiz"):
             # Perfil general (constantes y variables)
-            age = st.number_input("Edad (años)", min_value=13, max_value=100, value=25, step=1)
-            gender = st.selectbox("Género (opcional)", ["No declarar", "Femenino", "Masculino", "Otro"], index=0)
-            height_cm = st.number_input("Estatura (cm)", min_value=100, max_value=230, value=175, step=1)
-            weight_kg = st.number_input("Peso actual (kg)", min_value=30.0, max_value=300.0, value=75.0, step=0.5)
-            environment = st.selectbox("Entorno de entrenamiento", ["Gimnasio", "En casa", "Híbrido"], index=2)
+            age = st.number_input("Edad (años)", 
+                                min_value=13, 
+                                max_value=100, 
+                                value=existing_profile.get('age', 25), 
+                                step=1)
+            
+            gender_options = ["No declarar", "Femenino", "Masculino", "Otro"]
+            gender_default = gender_options.index(existing_profile.get('gender', "No declarar"))
+            gender = st.selectbox("Género (opcional)", 
+                                gender_options, 
+                                index=gender_default)
+            
+            height_cm = st.number_input("Estatura (cm)", 
+                                      min_value=100, 
+                                      max_value=230, 
+                                      value=existing_profile.get('height_cm', 175), 
+                                      step=1)
+            
+            weight_kg = st.number_input("Peso actual (kg)", 
+                                      min_value=30.0, 
+                                      max_value=300.0, 
+                                      value=existing_profile.get('weight_kg', 75.0), 
+                                      step=0.5)
+            
+            env_options = ["Gimnasio", "En casa", "Híbrido"]
+            env_default = env_options.index(existing_profile.get('environment', "Híbrido"))
+            environment = st.selectbox("Entorno de entrenamiento", 
+                                    env_options, 
+                                    index=env_default)
             
             # Variables de entrenamiento
             years = st.number_input("¿Cuánto tiempo llevas entrenando consistentemente? (años)", 
-                                  min_value=0.0, max_value=50.0, value=1.0, step=0.5)
+                                  min_value=0.0, 
+                                  max_value=50.0, 
+                                  value=existing_profile.get('years', 1.0), 
+                                  step=0.5)
+            
+            sessions_options = ["1-2", "2-3", "3-4", "4-5", "5-6", "6-7"]
+            sessions_default = sessions_options.index(existing_profile.get('sessions_per_week', "4-5"))
             sessions = st.selectbox("Sesiones por semana (rango)", 
-                                  ["1-2", "2-3", "3-4", "4-5", "5-6", "6-7"], index=3)
+                                  sessions_options, 
+                                  index=sessions_default)
             
             submitted = st.form_submit_button("Calcular nivel recomendado")
 
@@ -154,6 +210,9 @@ def show_profile_page():
             routine = routine_builder.generate_routine(
                 days, time_per_session=time_per_session, user_level=level)
             exercises = routine_builder.load_exercises()
+            
+            # Guardar rutina en la base de datos
+            db.save_routine(username, routine)
 
         st.success("Rutina generada")
         
