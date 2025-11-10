@@ -1,6 +1,7 @@
 import json
 import os
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Union
+from src.optimizer.routine_dp import optimize_weekly_routine
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 
@@ -13,7 +14,7 @@ def load_exercises(path: str = None) -> List[Dict[str, Any]]:
 
 def is_compound(ex: Dict[str, Any]) -> bool:
     # Heurística: movimientos que trabajan grandes grupos musculares y usan barras/mancuernas/kettlebell/olympic
-    large = {"glutes", "quads", "pectorals", "lats", "upper back", "quads", "hamstrings"}
+    large = {"glutes", "quads", "pectorals", "lats", "upper back", "hamstrings"}
     equip_compounds = {"barbell", "dumbbell", "kettlebell", "olympic barbell", "smith machine", "leverage machine", "trap bar"}
     if any(m in large for m in ex.get("targetMuscles", [])):
         return True
@@ -35,15 +36,91 @@ def estimate_sets_and_time(ex: Dict[str, Any]) -> Tuple[int, int]:
     return sets, total_time
 
 
-def build_items(exercises: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def _parse_user_profile(user_profile_or_level: Union[int, Dict[str, Any], None]) -> Dict[str, Any]:
+    """Normaliza el perfil de usuario.
+
+    Soporta pasar simplemente un entero (user_level) para compatibilidad.
+    Campos soportados en el dict de perfil:
+      - level: int (0-4)
+      - goal: 'strength'|'hypertrophy'|'endurance'
+      - age: int
+      - injuries: list of muscle names to evitar
+      - equipments: list of available equipments (si None, asumimos todo disponible)
+    """
+    if user_profile_or_level is None:
+        return {"level": 2, "goal": "hypertrophy", "age": 30, "injuries": [], "equipments": None}
+    if isinstance(user_profile_or_level, int):
+        return {"level": user_profile_or_level, "goal": "hypertrophy", "age": 30, "injuries": [], "equipments": None}
+    # ya es un dict
+    p = dict(user_profile_or_level)
+    return {
+        "level": int(p.get("level", 2)),
+        "goal": p.get("goal", "hypertrophy"),
+        "age": int(p.get("age", 30)),
+        "injuries": p.get("injuries", []) or [],
+        "equipments": p.get("equipments", None),
+    }
+
+
+GOAL_PARAMS = {
+    "strength": {"reps_range": (3, 6), "set_multiplier": 1.25},
+    "hypertrophy": {"reps_range": (6, 12), "set_multiplier": 1.0},
+    "endurance": {"reps_range": (12, 20), "set_multiplier": 0.8},
+}
+
+
+def _choose_reps_sets_for_exercise(is_cmp: bool, level: int, goal: str) -> Tuple[int, int]:
+    """Devuelve (sets, reps) recomendable para un ejercicio según tipo, nivel y objetivo."""
+    params = GOAL_PARAMS.get(goal, GOAL_PARAMS["hypertrophy"])
+    rmin, rmax = params["reps_range"]
+    # escalar reps según nivel: nivel 0->rmin, nivel 4->rmax
+    reps = int(round(rmin + (rmax - rmin) * (min(max(level, 0), 4) / 4)))
+
+    # base sets: compuesto -> 4, aislado -> 3
+    base_sets = 4 if is_cmp else 3
+    sets = int(round(base_sets * params.get("set_multiplier", 1.0) * (1 + level * 0.05)))
+    # clamp sets razonable
+    sets = max(2, min(6, sets))
+    return sets, reps
+
+
+def build_items(exercises: List[Dict[str, Any]], user_profile_or_level: Union[int, Dict[str, Any], None] = None) -> List[Dict[str, Any]]:
+    """Construye la lista de items con sets/reps/time ajustados al perfil del usuario.
+
+    Filtra ejercicios por lesiones y por equipamiento disponible.
+    """
+    profile = _parse_user_profile(user_profile_or_level)
+    level = profile["level"]
+    goal = profile["goal"]
+    injuries = set([m.lower() for m in profile.get("injuries", [])])
+    equipments_avail = profile.get("equipments")
+
     items = []
     for ex in exercises:
-        sets, time = estimate_sets_and_time(ex)
+        muscles = [m.lower() for m in ex.get("targetMuscles", [])]
+        # Si alguna muscle objetivo está en lesiones, saltar ejercicio
+        if any(m in injuries for m in muscles):
+            continue
+
+        # Filtrar por equipamiento si se indicó disponibilidad
+        if equipments_avail is not None:
+            # si el ejercicio requiere un equipamiento que no está en la lista, saltarlo
+            eqs = [e.lower() for e in ex.get("equipments", [])]
+            if eqs and not any(e in equipments_avail for e in eqs):
+                # si todos los equipamientos necesarios no están disponibles, saltar
+                continue
+
+        is_cmp = is_compound(ex)
+        _, time = estimate_sets_and_time(ex)
+        # override sets/reps basados en perfil
+        computed_sets, computed_reps = _choose_reps_sets_for_exercise(is_cmp, level, goal)
+
         items.append({
             "id": ex.get("exerciseId"),
             "name": ex.get("name"),
             "muscles": ex.get("targetMuscles", []),
-            "sets": sets,
+            "sets": computed_sets,
+            "reps": computed_reps,
             "time": time,
             "raw": ex,
         })
@@ -95,132 +172,14 @@ def knapsack_max_value(items: List[Dict[str, Any]], capacity: int, values: List[
 
 
 def generate_routine(num_days: int, time_per_session: int = 120, exercises_path: str = None, user_level: int = 2) -> Dict[str, Any]:
+    """Wrapper que construye los items y delega la optimización al módulo `optimizer`.
+
+    Mantiene la firma y compatibilidad con la versión previa.
     """
-    Genera una rutina semanal distribuida en `num_days` días.
-    Estrategia:
-      - Objetivo semanal por músculo: 10 sets (heurística para hipertrofia)
-      - Para cada día, resolvemos una mochila (knapsack) que maximiza la contribución a los sets faltantes
-        por minuto de entrenamiento.
-    Devuelve un diccionario con la lista de ejercicios por día y métricas.
-    """
+    user_profile_or_level = user_level
     exercises = load_exercises(exercises_path)
-    items = build_items(exercises)
-
-    # weekly target sets por músculo (hipertrofia)
-    target_per_muscle = 10
-    # construir lista de músculos presentes
-    muscles = set()
-    for it in items:
-        muscles.update(it["muscles"])
-    remaining = {m: target_per_muscle for m in muscles}
-
-    # Estamina semanal por músculo según nivel (user_level pasado como parámetro)
-    # calcular límite por músculo
-    stamina_limit_per_muscle = {m: default_level_stamina_limit(user_level) for m in muscles}
-    stamina_remaining = stamina_limit_per_muscle.copy()
-
-    # calcular consumo de estamina por ejercicio (distribuido entre músculos objetivo)
-    # fórmula: consumo_total = sets * reps(level) * intensidad
-    # intensidad: 1.5 para compuestos, 1.0 para aislados
-    reps = REPS_BY_LEVEL.get(user_level, 10)
-    item_stamina_costs: List[Dict[str, int]] = []
-    for it in items:
-        intensity = 1.5 if is_compound(it["raw"]) else 1.0
-        total_cost = int(it["sets"] * reps * intensity)
-        muscles_target = it["muscles"] or []
-        costs = {}
-        if muscles_target:
-            per_m = max(1, total_cost // len(muscles_target))
-            for m in muscles_target:
-                costs[m] = per_m
-        item_stamina_costs.append(costs)
-
-    schedule = {f"day_{i+1}": [] for i in range(num_days)}
-
-    for d in range(num_days):
-        # calcular valor heurístico de cada item según remaining required sets
-        values = []
-        for it in items:
-            v = 0
-            for m in it["muscles"]:
-                if remaining.get(m, 0) > 0:
-                    v += min(it["sets"], remaining[m])
-            # si no contribuye a remaining, dar un pequeño valor para variedad
-            if v == 0:
-                v = 0  # preferimos no seleccionar inútiles; permitirá llenar tiempo con primeros compuestos
-            values.append(v)
-        # filter out zero-value items to speed DP; but keep some if nothing remains
-        candidate_indices = [i for i, val in enumerate(values) if val > 0]
-        # además filtrar por estamina restante: eliminar items que excedan stamina_remaining en cualquier músculo
-        filtered = []
-        for i in candidate_indices:
-            costs = item_stamina_costs[i]
-            ok = True
-            for m, cost in costs.items():
-                if cost > stamina_remaining.get(m, 0):
-                    ok = False
-                    break
-            if ok:
-                filtered.append(i)
-        candidate_indices = filtered
-        if not candidate_indices:
-            # si no quedan candidatos que aporten o que cumplan estamina, intentamos buscar ejercicios compuestos
-            candidate_indices = []
-            for i in range(len(items)):
-                costs = item_stamina_costs[i]
-                # incluir solo si no excede estamina
-                ok = True
-                for m, cost in costs.items():
-                    if cost > stamina_remaining.get(m, 0):
-                        ok = False
-                        break
-                if ok and is_compound(items[i]["raw"]):
-                    candidate_indices.append(i)
-            # si aun así está vacío, no podemos llenar más este día (estamina/semanal cumplida)
-            if not candidate_indices:
-                # marcar día vacío y continuar
-                schedule[f"day_{d+1}" + "_meta"] = {"total_time_min": 0}
-                continue
-
-        # Build candidate list
-        candidates = [items[i] for i in candidate_indices]
-        # valores para los candidatos (siempre tomamos desde la lista `values` original)
-        cand_values = [values[i] for i in candidate_indices]
-
-        selected_local = knapsack_max_value(candidates, time_per_session, cand_values)
-        # map back indices
-        selected = [candidate_indices[i] for i in selected_local]
-
-        total_time = 0
-        for idx in selected:
-            it = items[idx]
-            schedule[f"day_{d+1}"].append({
-                "id": it["id"],
-                "name": it["name"],
-                "sets": it["sets"],
-                "reps": reps,
-                "time_min": it["time"],
-                "muscles": it["muscles"],
-                "stamina_costs": item_stamina_costs[idx],
-            })
-            total_time += it["time"]
-            # reducir remaining
-            for m in it["muscles"]:
-                if remaining.get(m, 0) > 0:
-                    remaining[m] = max(0, remaining[m] - it["sets"])
-            # reducir estamina restante
-            for m, cost in item_stamina_costs[idx].items():
-                stamina_remaining[m] = max(0, stamina_remaining.get(m, 0) - cost)
-
-        schedule[f"day_{d+1}" + "_meta"] = {"total_time_min": total_time}
-
-    # resumen semanal
-    done = {m: (target_per_muscle - remaining[m]) for m in muscles}
-    # incluir resumen de estamina usada y restante
-    stamina_used = {m: stamina_limit_per_muscle[m] - stamina_remaining.get(m, 0) for m in muscles}
-    return {"schedule": schedule, "weekly_sets_done": done, "weekly_target_per_muscle": target_per_muscle,
-        "stamina_limit_per_muscle": stamina_limit_per_muscle, "stamina_used": stamina_used,
-        "stamina_remaining": stamina_remaining}
+    items = build_items(exercises, user_profile_or_level)
+    return optimize_weekly_routine(items, num_days=num_days, time_per_session=time_per_session, user_level=user_level)
 
 
 def pretty_print_routine(routine: Dict[str, Any]):
