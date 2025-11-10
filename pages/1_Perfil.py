@@ -65,29 +65,10 @@ def show_profile_page():
             """
         )
 
-    # Parámetros de la rutina
-    with st.sidebar:
-        st.header("Parámetros")
-        days = st.selectbox("Días por semana", [3, 4, 5], index=1)
-        time_per_session = 120  # Fijo en 2 horas
-        st.markdown("**Tiempo por sesión:** 120 minutos (fijo)")
-        
-        level = st.slider(
-            "Nivel del usuario", 
-            min_value=0, 
-            max_value=1, 
-            value=st.session_state['user_level_slider'], 
-            key='user_level_slider', 
-            help="0 = Básico, 1 = Intermedio"
-        )
-        
-        if st.button("¿Cuál es mi nivel? / No sé mi nivel"):
-            st.session_state['show_level_quiz'] = True
-            st.session_state['profile_calculated'] = False
-            st.rerun()
-        
-        show_instructions = st.checkbox("Mostrar instrucciones de los ejercicios", value=True)
-        generate = st.button("Generar rutina")
+    # Nota: los parámetros de generación de rutina (días, nivel, generar)
+    # se han movido a la página "Mi rutina". Ve a la sección "Mi rutina"
+    # para definir Días por semana, Nivel del usuario y generar la rutina.
+    st.info("Parámetros de generación movidos a la página 'Mi rutina'. Ve a la sección 'Mi rutina' en el menú lateral.")
 
     # Formulario de perfil/nivel
     if st.session_state.get('show_level_quiz', False):
@@ -204,18 +185,15 @@ def show_profile_page():
                     st.session_state['show_level_quiz'] = False
                     st.rerun()
 
-    # Generación y visualización de rutina
-    if generate:
-        with st.spinner("Generando rutina..."):
-            routine = routine_builder.generate_routine(
-                days, time_per_session=time_per_session, user_level=level)
-            exercises = routine_builder.load_exercises()
-            
-            # Guardar rutina en la base de datos
-            db.save_routine(username, routine)
+    # Mostrar rutina guardada (si existe)
+    routine = db.get_routine(username)
+    if not routine:
+        st.info("No tienes una rutina guardada. Ve a 'Mi rutina' para generar una.")
+    else:
+        exercises = routine_builder.load_exercises()
+        st.success("Rutina cargada desde tu perfil")
+        show_instructions = st.checkbox("Mostrar instrucciones de los ejercicios", value=True)
 
-        st.success("Rutina generada")
-        
         # Mostrar rutina
         col1, col2 = st.columns([2, 1])
         with col1:
