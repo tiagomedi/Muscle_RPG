@@ -1435,5 +1435,572 @@
       }
     },
     "updated_at": "2025-11-09T21:13:30.064993"
+  },
+  "crismj": {
+    "routine": {
+      "schedule": {
+        "day_1": [
+          {
+            "id": "trmte8s",
+            "name": "band shrug",
+            "sets": 3,
+            "reps": 8,
+            "time_min": 12,
+            "muscles": [
+              "traps"
+            ],
+            "stamina_costs": {
+              "traps": 24
+            }
+          },
+          {
+            "id": "LMGXZn8",
+            "name": "barbell decline close grip to skull press",
+            "sets": 4,
+            "reps": 8,
+            "time_min": 16,
+            "muscles": [
+              "triceps"
+            ],
+            "stamina_costs": {
+              "triceps": 48
+            }
+          },
+          {
+            "id": "0br45wL",
+            "name": "push-up inside leg kick",
+            "sets": 4,
+            "reps": 8,
+            "time_min": 16,
+            "muscles": [
+              "glutes"
+            ],
+            "stamina_costs": {
+              "glutes": 48
+            }
+          },
+          {
+            "id": "27NNGFr",
+            "name": "cable incline fly (on stability ball)",
+            "sets": 4,
+            "reps": 8,
+            "time_min": 16,
+            "muscles": [
+              "pectorals"
+            ],
+            "stamina_costs": {
+              "pectorals": 48
+            }
+          },
+          {
+            "id": "a4F9Oyc",
+            "name": "kettlebell double alternating hang clean",
+            "sets": 4,
+            "reps": 8,
+            "time_min": 16,
+            "muscles": [
+              "biceps"
+            ],
+            "stamina_costs": {
+              "biceps": 48
+            }
+          },
+          {
+            "id": "ecl28tP",
+            "name": "dumbbell contralateral forward lunge",
+            "sets": 4,
+            "reps": 8,
+            "time_min": 16,
+            "muscles": [
+              "glutes"
+            ],
+            "stamina_costs": {
+              "glutes": 48
+            }
+          },
+          {
+            "id": "wnEscH8",
+            "name": "barbell press sit-up",
+            "sets": 4,
+            "reps": 8,
+            "time_min": 16,
+            "muscles": [
+              "abs"
+            ],
+            "stamina_costs": {
+              "abs": 48
+            }
+          },
+          {
+            "id": "gVlnLIJ",
+            "name": "cable reverse one arm curl",
+            "sets": 3,
+            "reps": 8,
+            "time_min": 12,
+            "muscles": [
+              "biceps"
+            ],
+            "stamina_costs": {
+              "biceps": 24
+            }
+          }
+        ],
+        "day_2": [
+          {
+            "id": "trmte8s",
+            "name": "band shrug",
+            "sets": 3,
+            "reps": 8,
+            "time_min": 12,
+            "muscles": [
+              "traps"
+            ],
+            "stamina_costs": {
+              "traps": 24
+            }
+          },
+          {
+            "id": "mtXengz",
+            "name": "dumbbell finger curls",
+            "sets": 4,
+            "reps": 8,
+            "time_min": 16,
+            "muscles": [
+              "forearms"
+            ],
+            "stamina_costs": {
+              "forearms": 48
+            }
+          },
+          {
+            "id": "ZZTGMKh",
+            "name": "one arm against wall",
+            "sets": 4,
+            "reps": 8,
+            "time_min": 16,
+            "muscles": [
+              "lats"
+            ],
+            "stamina_costs": {
+              "lats": 48
+            }
+          },
+          {
+            "id": "T2fA5Ir",
+            "name": "squat on bosu ball",
+            "sets": 4,
+            "reps": 8,
+            "time_min": 16,
+            "muscles": [
+              "quads"
+            ],
+            "stamina_costs": {
+              "quads": 48
+            }
+          },
+          {
+            "id": "x6KpKpq",
+            "name": "close-grip push-up",
+            "sets": 3,
+            "reps": 8,
+            "time_min": 12,
+            "muscles": [
+              "triceps"
+            ],
+            "stamina_costs": {
+              "triceps": 24
+            }
+          },
+          {
+            "id": "obe5LMq",
+            "name": "band side triceps extension",
+            "sets": 3,
+            "reps": 8,
+            "time_min": 12,
+            "muscles": [
+              "triceps"
+            ],
+            "stamina_costs": {
+              "triceps": 24
+            }
+          },
+          {
+            "id": "REXmfVC",
+            "name": "sledge hammer",
+            "sets": 3,
+            "reps": 8,
+            "time_min": 12,
+            "muscles": [
+              "abs"
+            ],
+            "stamina_costs": {
+              "abs": 24
+            }
+          },
+          {
+            "id": "qRZ5S1N",
+            "name": "cable one arm tricep pushdown",
+            "sets": 3,
+            "reps": 8,
+            "time_min": 12,
+            "muscles": [
+              "triceps"
+            ],
+            "stamina_costs": {
+              "triceps": 24
+            }
+          },
+          {
+            "id": "H1PESYI",
+            "name": "stationary bike run",
+            "sets": 3,
+            "reps": 8,
+            "time_min": 12,
+            "muscles": [
+              "cardiovascular system"
+            ],
+            "stamina_costs": {
+              "cardiovascular system": 24
+            }
+          }
+        ],
+        "day_3": [
+          {
+            "id": "trmte8s",
+            "name": "band shrug",
+            "sets": 3,
+            "reps": 8,
+            "time_min": 12,
+            "muscles": [
+              "traps"
+            ],
+            "stamina_costs": {
+              "traps": 24
+            }
+          },
+          {
+            "id": "84RyJf8",
+            "name": "dumbbell one arm shoulder press",
+            "sets": 4,
+            "reps": 8,
+            "time_min": 16,
+            "muscles": [
+              "delts"
+            ],
+            "stamina_costs": {
+              "delts": 48
+            }
+          },
+          {
+            "id": "H1PESYI",
+            "name": "stationary bike run",
+            "sets": 3,
+            "reps": 8,
+            "time_min": 12,
+            "muscles": [
+              "cardiovascular system"
+            ],
+            "stamina_costs": {
+              "cardiovascular system": 24
+            }
+          },
+          {
+            "id": "CHpahtl",
+            "name": "lever seated hip abduction",
+            "sets": 4,
+            "reps": 8,
+            "time_min": 16,
+            "muscles": [
+              "abductors"
+            ],
+            "stamina_costs": {
+              "abductors": 48
+            }
+          },
+          {
+            "id": "MrgP9L6",
+            "name": "lever rotary calf",
+            "sets": 4,
+            "reps": 8,
+            "time_min": 16,
+            "muscles": [
+              "calves"
+            ],
+            "stamina_costs": {
+              "calves": 48
+            }
+          },
+          {
+            "id": "VPPtusI",
+            "name": "inverted row bent knees",
+            "sets": 4,
+            "reps": 8,
+            "time_min": 16,
+            "muscles": [
+              "upper back"
+            ],
+            "stamina_costs": {
+              "upper back": 48
+            }
+          },
+          {
+            "id": "8d8qJQI",
+            "name": "barbell reverse grip incline bench row",
+            "sets": 4,
+            "reps": 8,
+            "time_min": 16,
+            "muscles": [
+              "upper back"
+            ],
+            "stamina_costs": {
+              "upper back": 48
+            }
+          },
+          {
+            "id": "JGKowMS",
+            "name": "smith narrow row",
+            "sets": 4,
+            "reps": 8,
+            "time_min": 16,
+            "muscles": [
+              "upper back"
+            ],
+            "stamina_costs": {
+              "upper back": 48
+            }
+          }
+        ],
+        "day_4": [
+          {
+            "id": "H1PESYI",
+            "name": "stationary bike run",
+            "sets": 3,
+            "reps": 8,
+            "time_min": 12,
+            "muscles": [
+              "cardiovascular system"
+            ],
+            "stamina_costs": {
+              "cardiovascular system": 24
+            }
+          },
+          {
+            "id": "FWdVhcW",
+            "name": "cable standing shoulder external rotation",
+            "sets": 3,
+            "reps": 8,
+            "time_min": 12,
+            "muscles": [
+              "delts"
+            ],
+            "stamina_costs": {
+              "delts": 24
+            }
+          },
+          {
+            "id": "u2X71Np",
+            "name": "cable front raise",
+            "sets": 3,
+            "reps": 8,
+            "time_min": 12,
+            "muscles": [
+              "delts"
+            ],
+            "stamina_costs": {
+              "delts": 24
+            }
+          },
+          {
+            "id": "PQcUlDi",
+            "name": "cable supine reverse fly",
+            "sets": 3,
+            "reps": 8,
+            "time_min": 12,
+            "muscles": [
+              "delts"
+            ],
+            "stamina_costs": {
+              "delts": 24
+            }
+          },
+          {
+            "id": "oQRJYkC",
+            "name": "side push neck stretch",
+            "sets": 3,
+            "reps": 8,
+            "time_min": 12,
+            "muscles": [
+              "levator scapulae"
+            ],
+            "stamina_costs": {
+              "levator scapulae": 24
+            }
+          },
+          {
+            "id": "DIVyqrU",
+            "name": "sphinx",
+            "sets": 3,
+            "reps": 8,
+            "time_min": 12,
+            "muscles": [
+              "spine"
+            ],
+            "stamina_costs": {
+              "spine": 24
+            }
+          },
+          {
+            "id": "zkgRrbK",
+            "name": "hyperextension (on bench)",
+            "sets": 3,
+            "reps": 8,
+            "time_min": 12,
+            "muscles": [
+              "spine"
+            ],
+            "stamina_costs": {
+              "spine": 24
+            }
+          },
+          {
+            "id": "Ezpnw9d",
+            "name": "band reverse wrist curl",
+            "sets": 3,
+            "reps": 8,
+            "time_min": 12,
+            "muscles": [
+              "forearms"
+            ],
+            "stamina_costs": {
+              "forearms": 24
+            }
+          },
+          {
+            "id": "G61cXLk",
+            "name": "cable kneeling rear delt row (with rope) (male)",
+            "sets": 3,
+            "reps": 8,
+            "time_min": 12,
+            "muscles": [
+              "delts"
+            ],
+            "stamina_costs": {
+              "delts": 24
+            }
+          },
+          {
+            "id": "qLpO4vV",
+            "name": "back extension on exercise ball",
+            "sets": 3,
+            "reps": 8,
+            "time_min": 12,
+            "muscles": [
+              "spine"
+            ],
+            "stamina_costs": {
+              "spine": 24
+            }
+          }
+        ],
+        "day_1_meta": {
+          "total_time_min": 120
+        },
+        "day_2_meta": {
+          "total_time_min": 120
+        },
+        "day_3_meta": {
+          "total_time_min": 120
+        },
+        "day_4_meta": {
+          "total_time_min": 120
+        }
+      },
+      "weekly_sets_done": {
+        "upper back": 10,
+        "spine": 9,
+        "biceps": 7,
+        "forearms": 7,
+        "cardiovascular system": 9,
+        "quads": 4,
+        "abductors": 4,
+        "levator scapulae": 3,
+        "adductors": 0,
+        "triceps": 10,
+        "hamstrings": 0,
+        "pectorals": 4,
+        "glutes": 8,
+        "delts": 10,
+        "serratus anterior": 0,
+        "abs": 7,
+        "calves": 4,
+        "lats": 4,
+        "traps": 9
+      },
+      "weekly_target_per_muscle": 10,
+      "stamina_limit_per_muscle": {
+        "upper back": 80,
+        "spine": 80,
+        "biceps": 80,
+        "forearms": 80,
+        "cardiovascular system": 80,
+        "quads": 80,
+        "abductors": 80,
+        "levator scapulae": 80,
+        "adductors": 80,
+        "triceps": 80,
+        "hamstrings": 80,
+        "pectorals": 80,
+        "glutes": 80,
+        "delts": 80,
+        "serratus anterior": 80,
+        "abs": 80,
+        "calves": 80,
+        "lats": 80,
+        "traps": 80
+      },
+      "stamina_used": {
+        "upper back": 80,
+        "spine": 72,
+        "biceps": 72,
+        "forearms": 72,
+        "cardiovascular system": 72,
+        "quads": 48,
+        "abductors": 48,
+        "levator scapulae": 24,
+        "adductors": 0,
+        "triceps": 80,
+        "hamstrings": 0,
+        "pectorals": 48,
+        "glutes": 80,
+        "delts": 80,
+        "serratus anterior": 0,
+        "abs": 72,
+        "calves": 48,
+        "lats": 48,
+        "traps": 72
+      },
+      "stamina_remaining": {
+        "upper back": 0,
+        "spine": 8,
+        "biceps": 8,
+        "forearms": 8,
+        "cardiovascular system": 8,
+        "quads": 32,
+        "abductors": 32,
+        "levator scapulae": 56,
+        "adductors": 80,
+        "triceps": 0,
+        "hamstrings": 80,
+        "pectorals": 32,
+        "glutes": 0,
+        "delts": 0,
+        "serratus anterior": 80,
+        "abs": 8,
+        "calves": 32,
+        "lats": 32,
+        "traps": 8
+      }
+    },
+    "updated_at": "2025-11-09T21:24:35.095951"
   }
 }
