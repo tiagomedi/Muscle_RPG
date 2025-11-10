@@ -146,6 +146,70 @@
         }
       },
       "notes": "mongo"
+    },
+    "0": {
+      "date": "2025-11-09T21:23:07.984049",
+      "duration": 100,
+      "energy_level": "Normal",
+      "exercises": {
+        "band shrug": {
+          "sets_completed": 3,
+          "avg_reps": 8,
+          "difficulty": "Moderado",
+          "target_sets": 3,
+          "target_reps": 8
+        },
+        "barbell decline close grip to skull press": {
+          "sets_completed": 4,
+          "avg_reps": 8,
+          "difficulty": "Moderado",
+          "target_sets": 4,
+          "target_reps": 8
+        },
+        "push-up inside leg kick": {
+          "sets_completed": 4,
+          "avg_reps": 8,
+          "difficulty": "Moderado",
+          "target_sets": 4,
+          "target_reps": 8
+        },
+        "cable incline fly (on stability ball)": {
+          "sets_completed": 4,
+          "avg_reps": 8,
+          "difficulty": "Moderado",
+          "target_sets": 4,
+          "target_reps": 8
+        },
+        "kettlebell double alternating hang clean": {
+          "sets_completed": 4,
+          "avg_reps": 8,
+          "difficulty": "Moderado",
+          "target_sets": 4,
+          "target_reps": 8
+        },
+        "dumbbell contralateral forward lunge": {
+          "sets_completed": 4,
+          "avg_reps": 8,
+          "difficulty": "Moderado",
+          "target_sets": 4,
+          "target_reps": 8
+        },
+        "barbell press sit-up": {
+          "sets_completed": 4,
+          "avg_reps": 8,
+          "difficulty": "Moderado",
+          "target_sets": 4,
+          "target_reps": 8
+        },
+        "cable reverse one arm curl": {
+          "sets_completed": 3,
+          "avg_reps": 8,
+          "difficulty": "Moderado",
+          "target_sets": 3,
+          "target_reps": 8
+        }
+      },
+      "notes": ""
     }
   },
   "hidalgo": {
