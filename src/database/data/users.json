@@ -1,3 +1,15 @@
 {
-
+  "Felipe Silva": {
+    "password": "pipe123",
+    "profile": {
+      "age": 26,
+      "gender": "Masculino",
+      "height_cm": 182,
+      "weight_kg": 84.0,
+      "environment": "Gimnasio",
+      "years": 3.0,
+      "sessions_per_week": "4-5"
+    },
+    "created_at": "2025-11-09T21:40:31.276077"
+  }
 }

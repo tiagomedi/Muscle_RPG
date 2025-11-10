@@ -25,6 +25,12 @@ def show_my_routine():
 
     _ensure_session_keys()
 
+    # Si existe una asignación diferida desde el quiz, aplicarla antes de crear el widget
+    # (evita el error de Streamlit de modificar session_state para una key
+    # después de que el widget con esa key ya fue instanciado)
+    if st.session_state.get('defer_set_user_level', None) is not None:
+        st.session_state['user_level_slider'] = st.session_state.pop('defer_set_user_level')
+
     # Parámetros moved from Perfil -> aquí
     st.subheader("Parámetros")
     cols = st.columns([2, 1, 1])
@@ -128,10 +134,13 @@ def show_my_routine():
                 st.write({'user_profile': st.session_state['user_profile'], 'scores': st.session_state['profile_scores']})
             col1a, col2a = st.columns([1, 2])
             with col1a:
-                if st.button("Aplicar nivel recomendado", key='apply_level_mi_rutina'):
-                    st.session_state['user_level_slider'] = recommended
-                    st.session_state['show_level_quiz'] = False
-                    st.rerun()
+                    if st.button("Aplicar nivel recomendado", key='apply_level_mi_rutina'):
+                        # No modificar directamente 'user_level_slider' si el slider ya
+                        # fue creado en esta ejecución; usar una asignación diferida
+                        # que se aplicará antes de crear el widget en el siguiente rerun.
+                        st.session_state['defer_set_user_level'] = recommended
+                        st.session_state['show_level_quiz'] = False
+                        st.rerun()
             with col2a:
                 st.write("")
 
