@@ -4,15 +4,9 @@ from datetime import datetime, timedelta
 from src.database.db_manager import DatabaseManager
 from src.utils.session import check_login_state
 
-def get_current_day_exercises():
-    """Obtiene los ejercicios del día actual desde la rutina guardada."""
-    # TODO: Implementar obtención de ejercicios del día actual
-    # Por ahora retornamos datos de ejemplo
-    return [
-        {"name": "Press de Banca", "sets": 3, "reps": 12},
-        {"name": "Dominadas", "sets": 4, "reps": 8},
-        {"name": "Press Militar", "sets": 3, "reps": 12}
-    ]
+def get_day_exercises(db: DatabaseManager, username: str, day_index: int):
+    """Obtiene los ejercicios del día desde la rutina guardada."""
+    return db.get_current_day_exercises(username, day_index)
 
 def show_tracking_page():
     """Muestra la página de seguimiento diario."""
@@ -45,7 +39,11 @@ def show_tracking_page():
     st.write(f"📅 Fecha seleccionada: {selected_day['label']}")
     
     # Obtener ejercicios del día
-    exercises = get_current_day_exercises()
+    exercises = get_day_exercises(db, username, selected_day['index'])
+    
+    if not exercises:
+        st.warning("⚠️ No hay una rutina guardada para este día. Por favor, genera primero una rutina en la sección de Perfil.")
+        return
     
     # Formulario de seguimiento
     with st.form(key=f"tracking_form_{selected_day['index']}"):
