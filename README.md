@@ -171,3 +171,27 @@ routine = opt.optimize_workout(
 ---
 
 Si quieres, puedo añadir un ejemplo de test unitario en `tests/test_routine_optimizer.py` que verifique la solución para un caso pequeño y rápido.
+
+## Ejecutar con Docker (opcional)
+
+He añadido un `Dockerfile` y `docker-compose.yml` para que puedas ejecutar la aplicación fácilmente y que tu profesor la abra en su navegador.
+
+Pasos rápidos (PowerShell):
+
+```powershell
+# Construir y levantar el contenedor en background
+docker compose up --build -d
+
+# Ver logs (opcional)
+docker compose logs -f
+
+# Parar y remover contenedores
+docker compose down
+```
+
+Después de levantar, abre http://localhost:8501 en el navegador. El servicio ejecuta `streamlit_app.py` como entrada.
+
+Notas:
+- El `docker-compose.yml` hace un bind-mount del directorio del proyecto dentro del contenedor para facilitar desarrollo; si prefieres un contenedor inmutable, elimina la sección `volumes` del servicio antes de distribuir.
+- Si tu profesor no tiene Docker, puedo preparar una imagen y subirla a Docker Hub (necesitarías darme permiso para empujar o yo te doy instrucciones para hacerlo localmente).
+
