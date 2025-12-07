@@ -3,7 +3,7 @@ import streamlit as st
 import json
 from src import routine_builder
 from src.database.db_manager import DatabaseManager
-from src.utils.session import check_login_state
+from src.session.session import check_login_state
 
 def init_session_state():
     """Inicializa variables de sesión específicas del perfil."""
