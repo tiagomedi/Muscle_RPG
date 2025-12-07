@@ -24,5 +24,18 @@
       "sessions_per_week": "3-4"
     },
     "created_at": "2025-11-09T22:15:47.419047"
+  },
+  "hola123": {
+    "password": "123",
+    "profile": {
+      "age": 25,
+      "gender": "No declarar",
+      "height_cm": 175,
+      "weight_kg": 75.0,
+      "environment": "H\u00edbrido",
+      "years": 1.0,
+      "sessions_per_week": "4-5"
+    },
+    "created_at": "2025-12-07T21:47:02.410710"
   }
 }

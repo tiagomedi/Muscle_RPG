@@ -1,7 +1,6 @@
 import json
 import os
 from typing import List, Dict, Any, Tuple, Union
-from src.optimizer.routine_dp import optimize_weekly_routine
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 
@@ -172,14 +171,134 @@ def knapsack_max_value(items: List[Dict[str, Any]], capacity: int, values: List[
 
 
 def generate_routine(num_days: int, time_per_session: int = 120, exercises_path: str = None, user_level: int = 2) -> Dict[str, Any]:
-    """Wrapper que construye los items y delega la optimización al módulo `optimizer`.
-
-    Mantiene la firma y compatibilidad con la versión previa.
     """
+    Genera una rutina semanal distribuida en `num_days` días.
+    Estrategia:
+      - Objetivo semanal por músculo: 10 sets (heurística para hipertrofia)
+      - Para cada día, resolvemos una mochila (knapsack) que maximiza la contribución a los sets faltantes
+        por minuto de entrenamiento.
+    Devuelve un diccionario con la lista de ejercicios por día y métricas.
+    """
+    # soportar pasar tanto un entero user_level (compat) como un dict de perfil
     user_profile_or_level = user_level
     exercises = load_exercises(exercises_path)
     items = build_items(exercises, user_profile_or_level)
-    return optimize_weekly_routine(items, num_days=num_days, time_per_session=time_per_session, user_level=user_level)
+
+    # weekly target sets por músculo (hipertrofia)
+    target_per_muscle = 10
+    # construir lista de músculos presentes
+    muscles = set()
+    for it in items:
+        muscles.update(it["muscles"])
+    remaining = {m: target_per_muscle for m in muscles}
+
+    # Estamina semanal por músculo según nivel (extraída del perfil)
+    level = _parse_user_profile(user_profile_or_level).get("level", 2)
+    stamina_limit_per_muscle = {m: default_level_stamina_limit(level) for m in muscles}
+    stamina_remaining = stamina_limit_per_muscle.copy()
+
+    # calcular consumo de estamina por ejercicio (distribuido entre músculos objetivo)
+    # fórmula: consumo_total = sets * reps(exercise) * intensidad
+    # intensidad: 1.5 para compuestos, 1.0 para aislados
+    item_stamina_costs: List[Dict[str, int]] = []
+    for it in items:
+        intensity = 1.5 if is_compound(it["raw"]) else 1.0
+        reps_for_item = it.get("reps") or REPS_BY_LEVEL.get(level, 10)
+        total_cost = int(it["sets"] * reps_for_item * intensity)
+        muscles_target = it["muscles"] or []
+        costs = {}
+        if muscles_target:
+            per_m = max(1, total_cost // len(muscles_target))
+            for m in muscles_target:
+                costs[m] = per_m
+        item_stamina_costs.append(costs)
+
+    schedule = {f"day_{i+1}": [] for i in range(num_days)}
+
+    for d in range(num_days):
+        # calcular valor heurístico de cada item según remaining required sets
+        values = []
+        for it in items:
+            v = 0
+            for m in it["muscles"]:
+                if remaining.get(m, 0) > 0:
+                    v += min(it["sets"], remaining[m])
+            # si no contribuye a remaining, dar un pequeño valor para variedad
+            if v == 0:
+                v = 0  # preferimos no seleccionar inútiles; permitirá llenar tiempo con primeros compuestos
+            values.append(v)
+        # filter out zero-value items to speed DP; but keep some if nothing remains
+        candidate_indices = [i for i, val in enumerate(values) if val > 0]
+        # además filtrar por estamina restante: eliminar items que excedan stamina_remaining en cualquier músculo
+        filtered = []
+        for i in candidate_indices:
+            costs = item_stamina_costs[i]
+            ok = True
+            for m, cost in costs.items():
+                if cost > stamina_remaining.get(m, 0):
+                    ok = False
+                    break
+            if ok:
+                filtered.append(i)
+        candidate_indices = filtered
+        if not candidate_indices:
+            # si no quedan candidatos que aporten o que cumplan estamina, intentamos buscar ejercicios compuestos
+            candidate_indices = []
+            for i in range(len(items)):
+                costs = item_stamina_costs[i]
+                # incluir solo si no excede estamina
+                ok = True
+                for m, cost in costs.items():
+                    if cost > stamina_remaining.get(m, 0):
+                        ok = False
+                        break
+                if ok and is_compound(items[i]["raw"]):
+                    candidate_indices.append(i)
+            # si aun así está vacío, no podemos llenar más este día (estamina/semanal cumplida)
+            if not candidate_indices:
+                # marcar día vacío y continuar
+                schedule[f"day_{d+1}" + "_meta"] = {"total_time_min": 0}
+                continue
+
+        # Build candidate list
+        candidates = [items[i] for i in candidate_indices]
+        # valores para los candidatos (siempre tomamos desde la lista `values` original)
+        cand_values = [values[i] for i in candidate_indices]
+
+        selected_local = knapsack_max_value(candidates, time_per_session, cand_values)
+        # map back indices
+        selected = [candidate_indices[i] for i in selected_local]
+
+        total_time = 0
+        for idx in selected:
+            it = items[idx]
+            schedule[f"day_{d+1}"].append({
+                "id": it["id"],
+                "name": it["name"],
+                "sets": it["sets"],
+                "reps": it.get("reps"),
+                "time_min": it["time"],
+                "muscles": it["muscles"],
+                "stamina_costs": item_stamina_costs[idx],
+            })
+            total_time += it["time"]
+            # reducir remaining
+            for m in it["muscles"]:
+                if remaining.get(m, 0) > 0:
+                    remaining[m] = max(0, remaining[m] - it["sets"])
+            # reducir estamina restante
+            for m, cost in item_stamina_costs[idx].items():
+                stamina_remaining[m] = max(0, stamina_remaining.get(m, 0) - cost)
+
+        schedule[f"day_{d+1}" + "_meta"] = {"total_time_min": total_time}
+
+    # resumen semanal
+    done = {m: (target_per_muscle - remaining[m]) for m in muscles}
+    # incluir resumen de estamina usada y restante
+    stamina_used = {m: stamina_limit_per_muscle[m] - stamina_remaining.get(m, 0) for m in muscles}
+    return {"schedule": schedule, "weekly_sets_done": done, "weekly_target_per_muscle": target_per_muscle,
+        "stamina_limit_per_muscle": stamina_limit_per_muscle, "stamina_used": stamina_used,
+        "stamina_remaining": stamina_remaining}
 
 
 def pretty_print_routine(routine: Dict[str, Any]):
