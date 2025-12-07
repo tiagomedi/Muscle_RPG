@@ -47,23 +47,6 @@ def show_profile_page():
             if st.button("🔄 Actualizar mi perfil"):
                 st.session_state['show_level_quiz'] = True
                 st.rerun()
-    
-    # Descripción del proyecto
-    with st.expander("Acerca del proyecto", expanded=False):
-        st.markdown(
-            """
-            **Resumen del proyecto**
-
-            La planificación de rutinas de entrenamiento suele ser genérica y poco adaptable al progreso
-            individual del usuario, lo que limita la eficiencia de los resultados. Este proyecto propone
-            modelar los ejercicios de hipertrofia muscular y su progresión mediante un grafo que representa
-            posibles caminos de entrenamiento, permitiendo identificar rutas que maximicen las ganancias
-            musculares de forma progresiva y estructurada.
-
-            Este trabajo se centra exclusivamente en la hipertrofia, buscando el aumento del tamaño muscular
-            a través de una planificación inteligente del volumen, intensidad y frecuencia de entrenamiento.
-            """
-        )
 
     # Nota: los parámetros de generación de rutina (días, nivel, generar)
     # se han movido a la página "Mi rutina". Ve a la sección "Mi rutina"
