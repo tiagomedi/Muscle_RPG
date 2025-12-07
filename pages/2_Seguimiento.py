@@ -2,7 +2,7 @@
 import streamlit as st
 from datetime import datetime, timedelta
 from src.database.db_manager import DatabaseManager
-from src.utils.session import check_login_state
+from src.session.session import check_login_state
 
 def get_day_exercises(db: DatabaseManager, username: str, day_index: int):
     """Obtiene los ejercicios del día desde la rutina guardada."""
