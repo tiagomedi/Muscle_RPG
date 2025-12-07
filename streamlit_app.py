@@ -39,15 +39,15 @@ def main():
         👈 **Usa el menú lateral para navegar entre secciones:**
         
         1. **Perfil**: 
-           - Configura tu nivel
-           - Genera tu rutina personalizada
-           - Actualiza tus preferencias
-        
-        2. **Seguimiento**: 
-           - Registra tu progreso diario
-           - Marca ejercicios completados
-           - Anota tu rendimiento
-           
+            - Configura tu nivel
+            - Genera tu rutina personalizada
+            - Actualiza tus preferencias
+            
+            2. **Seguimiento**: 
+            - Registra tu progreso diario
+            - Marca ejercicios completados
+            - Anota tu rendimiento
+            
         ¡Comienza tu viaje de transformación! 💪
         """)
         return
