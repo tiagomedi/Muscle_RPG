@@ -2,7 +2,7 @@ import json
 import os
 from typing import List, Dict, Any, Tuple, Union
 
-DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
+DATA_DIR = os.path.join(os.path.dirname(__file__), "data-exercises")
 
 def load_exercises(path: str = None) -> List[Dict[str, Any]]:
     p = path or os.path.join(DATA_DIR, "exercises.json")
