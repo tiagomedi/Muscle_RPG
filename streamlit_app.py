@@ -16,7 +16,6 @@ def main():
         initial_sidebar_state="auto",
     )
 
-    # Mostrar estado de sesión en la barra lateral
     with st.sidebar:
         if st.session_state.get('logged_in', False):
             st.markdown(f"👤 **{st.session_state['username']}**")
@@ -28,7 +27,7 @@ def main():
             st.info("No has iniciado sesión")
 
     st.title("Muscle RPG")
-    st.caption("Tu entrenador personal gamificado")
+    st.caption("Tu entrenador personal")
     
     init_session_state()
     db = DatabaseManager()
@@ -86,45 +85,9 @@ def main():
                     st.error("❌ Las contraseñas no coinciden")
                 else:
                     if db.register_user(new_username, new_password):
-                        st.success("✅ ¡Registro exitoso! Ahora puedes iniciar sesión")
+                        st.success("✅ ¡Registro exitoso! ")
                     else:
                         st.error("❌ El usuario ya existe")
-
-    st.markdown("---")
-    with st.expander("ℹ️ Acerca del proyecto"):
-        st.markdown(
-            """
-            **Muscle RPG** es un sistema de entrenamiento gamificado que adapta tus rutinas según tu progreso.
-            
-            ### Características principales:
-
-            🎯 **Enfoque en hipertrofia**
-            - Optimizado para el crecimiento muscular
-            - Planificación inteligente de volumen e intensidad
-            
-            🎮 **Sistema de niveles**
-            - Progresión similar a un videojuego RPG
-            - Dos niveles de experiencia: Básico e Intermedio
-            
-            📊 **Seguimiento detallado**
-            - Registra tu progreso día a día
-            - Analiza tu rendimiento por ejercicio
-            
-            🔄 **Ciclos trimestrales**
-            - Actualización de rutinas cada 3 meses
-            - Evaluación continua de progreso
-            
-            ⌚ **Sesiones de 2 horas**
-            - Diseñado para entrenamientos completos
-            - Estructura optimizada
-            
-            ### Para comenzar:
-            1. 📝 Regístrate o inicia sesión
-            2. 👤 Completa tu perfil
-            3. 💪 Genera tu rutina personalizada
-            4. ✅ ¡Comienza a entrenar y registra tu progreso!
-            """
-        )
 
 if __name__ == "__main__":
     main()
