@@ -48,11 +48,6 @@ def show_profile_page():
                 st.session_state['show_level_quiz'] = True
                 st.rerun()
 
-    # Nota: los parámetros de generación de rutina (días, nivel, generar)
-    # se han movido a la página "Mi rutina". Ve a la sección "Mi rutina"
-    # para definir Días por semana, Nivel del usuario y generar la rutina.
-    st.info("Parámetros de generación movidos a la página 'Mi rutina'. Ve a la sección 'Mi rutina' en el menú lateral.")
-
     # Formulario de perfil/nivel
     if st.session_state.get('show_level_quiz', False):
         st.markdown("### Perfil de entrenamiento")
@@ -174,7 +169,6 @@ def show_profile_page():
         st.info("No tienes una rutina guardada. Ve a 'Mi rutina' para generar una.")
     else:
         exercises = routine_builder.load_exercises()
-        st.success("Rutina cargada desde tu perfil")
         show_instructions = st.checkbox("Mostrar instrucciones de los ejercicios", value=True)
 
         # Mostrar rutina
