@@ -4,12 +4,10 @@ from typing import List, Dict, Any, Tuple, Union
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 
-
 def load_exercises(path: str = None) -> List[Dict[str, Any]]:
     p = path or os.path.join(DATA_DIR, "exercises.json")
     with open(p, "r", encoding="utf-8") as f:
         return json.load(f)
-
 
 def is_compound(ex: Dict[str, Any]) -> bool:
     # Heurística: movimientos que trabajan grandes grupos musculares y usan barras/mancuernas/kettlebell/olympic
@@ -20,7 +18,6 @@ def is_compound(ex: Dict[str, Any]) -> bool:
     if any(eq in equip_compounds for eq in ex.get("equipments", [])):
         return True
     return False
-
 
 def estimate_sets_and_time(ex: Dict[str, Any]) -> Tuple[int, int]:
     """
@@ -60,13 +57,11 @@ def _parse_user_profile(user_profile_or_level: Union[int, Dict[str, Any], None])
         "equipments": p.get("equipments", None),
     }
 
-
 GOAL_PARAMS = {
     "strength": {"reps_range": (3, 6), "set_multiplier": 1.25},
     "hypertrophy": {"reps_range": (6, 12), "set_multiplier": 1.0},
     "endurance": {"reps_range": (12, 20), "set_multiplier": 0.8},
 }
-
 
 def _choose_reps_sets_for_exercise(is_cmp: bool, level: int, goal: str) -> Tuple[int, int]:
     """Devuelve (sets, reps) recomendable para un ejercicio según tipo, nivel y objetivo."""
@@ -81,7 +76,6 @@ def _choose_reps_sets_for_exercise(is_cmp: bool, level: int, goal: str) -> Tuple
     # clamp sets razonable
     sets = max(2, min(6, sets))
     return sets, reps
-
 
 def build_items(exercises: List[Dict[str, Any]], user_profile_or_level: Union[int, Dict[str, Any], None] = None) -> List[Dict[str, Any]]:
     """Construye la lista de items con sets/reps/time ajustados al perfil del usuario.
@@ -125,7 +119,6 @@ def build_items(exercises: List[Dict[str, Any]], user_profile_or_level: Union[in
         })
     return items
 
-
 # Reps por nivel (heurística). Se usan para calcular consumo de estamina.
 REPS_BY_LEVEL = {
     0: 8,   # principiante
@@ -140,7 +133,6 @@ def default_level_stamina_limit(level: int) -> int:
     """Devuelve el límite de estamina por músculo para un nivel dado (unidad arbitraria semanal)."""
     mapping = {0: 80, 1: 110, 2: 140, 3: 180, 4: 220}
     return mapping.get(level, 140)
-
 
 def knapsack_max_value(items: List[Dict[str, Any]], capacity: int, values: List[int]) -> List[int]:
     """
@@ -168,7 +160,6 @@ def knapsack_max_value(items: List[Dict[str, Any]], capacity: int, values: List[
     best_t = max(range(capacity + 1), key=lambda x: dp[x])
     selected = [i for i, chosen in enumerate(pick[best_t]) if chosen]
     return selected
-
 
 def generate_routine(num_days: int, time_per_session: int = 120, exercises_path: str = None, user_level: int = 2) -> Dict[str, Any]:
     """
@@ -324,8 +315,6 @@ def pretty_print_routine(routine: Dict[str, Any]):
     for m in sorted(limits.keys()):
         print(f"  - {m}: {used.get(m,0)}/{limits.get(m,0)} (rem: {rem.get(m,0)})")
 
-
 if __name__ == "__main__":
-    # pequeño test local
     r = generate_routine(4)
     pretty_print_routine(r)
