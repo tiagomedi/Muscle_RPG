@@ -187,7 +187,7 @@ def show_profile_page():
                     cols = st.columns([1, 4])
                     with cols[0]:
                         if ex_raw and ex_raw.get("gifUrl"):
-                            st.image(ex_raw.get("gifUrl"), use_column_width=True)
+                            st.image(ex_raw.get("gifUrl"), use_container_width=True)
                         else:
                             st.write("")
                     with cols[1]:
