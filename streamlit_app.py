@@ -1,8 +1,5 @@
-#!/usr/bin/env python3
-"""Página principal de Muscle RPG con sistema de login."""
 import streamlit as st
 from src.database.db_manager import DatabaseManager
-
 
 def init_session_state():
     """Inicializa variables de sesión."""
@@ -10,7 +7,6 @@ def init_session_state():
         st.session_state['logged_in'] = False
     if 'username' not in st.session_state:
         st.session_state['username'] = None
-
 
 def main():
     st.set_page_config(
@@ -129,7 +125,6 @@ def main():
             4. ✅ ¡Comienza a entrenar y registra tu progreso!
             """
         )
-
 
 if __name__ == "__main__":
     main()
