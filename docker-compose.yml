@@ -2,7 +2,8 @@ services:
   musclerpg:
     build: .
     container_name: musclerpg_app
-    network_mode: host
+    ports:
+      - "8502:8502"
     volumes:
       - ./:/app:cached
     environment:
