@@ -17,4 +17,4 @@ USER appuser
 
 EXPOSE 8502
 
-CMD ["streamlit", "run", "streamlit_app.py", "--server.port", "8502", "--server.address", "127.0.0.1"]
+CMD ["streamlit", "run", "streamlit_app.py", "--server.port", "8502", "--server.address", "0.0.0.0"]
